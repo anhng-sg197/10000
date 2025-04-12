@@ -133,7 +133,7 @@
     
     .nav {
       position: fixed;
-      bottom: 30px;
+      bottom: 90px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
@@ -164,10 +164,34 @@
       transform: none;
       box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     }
+    .mobile-nav {
+      position: fixed;
+      bottom: 20px;
+      left: 0;
+      right: 0;
+      display: flex;
+      justify-content: center;
+      gap: 15px;
+      z-index: 30;
+    }
+    
+    .mobile-nav-btn {
+      width: 60px;
+      height: 40px;
+      background: #ffb6c1;
+      border: none;
+      border-radius: 20px;
+      color: white;
+      font-size: 16px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    }
     
     .swipe-indicator {
       position: fixed;
-      bottom: 90px;
+      bottom: 150px;
       left: 50%;
       transform: translateX(-50%);
       z-index: 20;
@@ -190,12 +214,13 @@
     .audio-controls {
       position: fixed;
       bottom: 30px;
-      right: 30px;
+      left: 50%;
+      transform: translateX(-50%);
       z-index: 20;
       display: flex;
-      flex-direction: column;
+      flex-direction: row;
       align-items: center;
-      gap: 10px;
+      gap: 20px;
     }
     
     .music-btn {
@@ -222,7 +247,6 @@
       align-items: center;
       height: 20px;
       gap: 2px;
-      margin-top: 5px;
     }
     
     .sound-wave span {
@@ -300,7 +324,6 @@
       display: none;
       font-size: 1.1em;
     }
-    
     /* Responsive styles */
     @media (max-width: 768px) {
       .card-container {
@@ -316,9 +339,22 @@
         padding: 20px;
       }
       
-      .nav button {
-        font-size: 1em;
-        padding: 0.4em 1em;
+      .nav {
+        display: none;
+      }
+      
+      .mobile-nav {
+        display: flex;
+      }
+      
+      .audio-controls {
+        bottom: 80px;
+      }
+    }
+    
+    @media (min-width: 769px) {
+      .mobile-nav {
+        display: none;
       }
     }
     
@@ -332,14 +368,15 @@
         padding: 15px;
       }
       
-      .nav button {
-        font-size: 0.9em;
-        padding: 0.3em 0.8em;
-      }
-      
       .page-corner {
         width: 40px;
         height: 40px;
+      }
+      
+      .swipe-indicator {
+        bottom: 130px;
+        font-size: 0.9em;
+        padding: 8px 15px;
       }
     }
 
@@ -359,8 +396,8 @@
       <p id="wrongPassword">Sai mật khẩu rồi nè 🥲</p>
     </div>
   
-    <audio id="backgroundMusic" loop>
-      <source id="musicSource" src="https://cdn.pixabay.com/audio/2023/02/24/audio_03438a732a.mp3?filename=lofi-chill-medium-version-159456.mp3" type="audio/mpeg">
+    <audio id="backgroundMusic">
+      <source id="musicSource" src="https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744469549/tasty-chill-lofi-vibe-242105_jqetzd.mp3" type="audio/mpeg">
     </audio>
     
     <div class="card-container" id="cardContainer">
@@ -371,12 +408,20 @@
       <button id="prevBtn" onclick="prevPage()">⬅ Trang trước</button>
       <button id="nextBtn" onclick="nextPage()">Trang sau ➡</button>
     </div>
+    
+    <div class="mobile-nav">
+      <button class="mobile-nav-btn" id="mobilePrevBtn" onclick="prevPage()">⬅</button>
+      <button class="mobile-nav-btn" id="mobileNextBtn" onclick="nextPage()">➡</button>
+    </div>
   
     <div class="swipe-indicator">
       <span>Vuốt hoặc nhấn để lật trang →</span>
     </div>
   
     <div class="audio-controls">
+      <div class="sound-wave" style="display: none;">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
       <button class="music-btn" id="toggleMusic" onclick="toggleMusic()">
         <svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
           <path d="M8 5V19L19 12L8 5Z" fill="white"/>
@@ -385,9 +430,6 @@
           <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="white"/>
         </svg>
       </button>
-      <div class="sound-wave" style="display: none;">
-        <span></span><span></span><span></span><span></span><span></span>
-      </div>
       <button class="music-btn" id="changeMusic" onclick="changeMusic()">
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M12 3V13.55C11.41 13.21 10.73 13 10 13C7.79 13 6 14.79 6 17C6 19.21 7.79 21 10 21C12.21 21 14 19.21 14 17V7H18V3H12ZM10 19C8.9 19 8 18.1 8 17C8 15.9 8.9 15 10 15C11.1 15 12 15.9 12 17C12 18.1 11.1 19 10 19Z" fill="white"/>
@@ -402,23 +444,23 @@
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744464878/486185379_3874110859566748_2113793991814531200_n_wsbct8.jpg"
           },
           {
-            text: " Gửi em,<br>Một hành trình 10.000 ngày vừa khép lại, và anh muốn kể em nghe từ đầu...<br><br>Những ngày ấy không chỉ là con số. Đó là từng ánh nhìn em trao, từng mùa em lớn lên, từng khoảnh khắc em lặng lẽ đẹp đến ngẩn ngơ. Và anh tin – sự có mặt của em là điều kỳ diệu nhất mà cuộc đời đã âm thầm chuẩn bị.",
+            text: "Gửi em,<br>Một hành trình 10.000 ngày vừa khép lại, và anh muốn kể em nghe từ đầu...<br><br>Những ngày ấy không chỉ là con số. Đó là từng ánh nhìn em trao, từng mùa em lớn lên, từng khoảnh khắc em lặng lẽ đẹp đến ngẩn ngơ. Và anh tin – sự có mặt của em là điều kỳ diệu nhất mà cuộc đời đã âm thầm chuẩn bị.",
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/476853262_3839787499665751_3491104318425042400_n_bgcczq.jpg"
           },
           {
-            text: " Từ khoảnh khắc em hình thành,<br>thế giới này bắt đầu có thêm một màu dịu dàng mà anh mãi say mê.<br><br>Em không chỉ đến với đời, em đến như một tia sáng – mang theo bao ấm áp, trong trẻo và cả một thế giới đầy sắc màu. Có em, mọi điều tưởng chừng bình thường cũng trở nên đặc biệt hơn.",
+            text: "Từ khoảnh khắc em hình thành,<br>thế giới này bắt đầu có thêm một màu dịu dàng mà anh mãi say mê.<br><br>Em không chỉ đến với đời, em đến như một tia sáng – mang theo bao ấm áp, trong trẻo và cả một thế giới đầy sắc màu. Có em, mọi điều tưởng chừng bình thường cũng trở nên đặc biệt hơn.",
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/480942611_3839787542999080_6783851008321058400_n_fjqjoo.jpg"
           },
           {
-            text: " Anh không biết mình may mắn thế nào,<br>khi được hiện diện trong chương truyện 10.000 ngày của em.<br><br>Thời gian trôi, có lẽ anh đã lỡ nhiều khoảnh khắc. Nhưng chỉ cần một ánh mắt, một nụ cười của em, mọi thứ như được chữa lành. Em đã lặng lẽ đi cùng năm tháng, và anh chỉ muốn được lặng lẽ bên em như thế, lâu thật lâu.",
+            text: "Anh không biết mình may mắn thế nào,<br>khi được hiện diện trong chương truyện 10.000 ngày của em.<br><br>Thời gian trôi, có lẽ anh đã lỡ nhiều khoảnh khắc. Nhưng chỉ cần một ánh mắt, một nụ cười của em, mọi thứ như được chữa lành. Em đã lặng lẽ đi cùng năm tháng, và anh chỉ muốn được lặng lẽ bên em như thế, lâu thật lâu.",
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/470218078_3781632032147965_5440740182080465760_n_chsujx.jpg"
           },
           {
-            text: " Và rồi hôm nay,<br>anh mời em đến nơi này, chỉ để nói: cảm ơn em đã đến, và ở lại.<br><br>Không cần pháo hoa, không cần điều bất ngờ. Chỉ cần em, chỉ cần ánh mắt ấy trong buổi tối này – là đủ để biến 10.000 ngày qua thành điều ngọt ngào nhất đời anh.",
+            text: "Và rồi hôm nay,<br>anh mời em đến nơi này, chỉ để nói: cảm ơn em đã đến, và ở lại.<br><br>Không cần pháo hoa, không cần điều bất ngờ. Chỉ cần em, chỉ cần ánh mắt ấy trong buổi tối này – là đủ để biến 10.000 ngày qua thành điều ngọt ngào nhất đời anh.",
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/474519851_3809247989386369_1354147707772670712_n_x3irw0.jpg"
           },
           {
-            text: " 20:00 – 14.04.2025<br>Mr.Saigon, 45 Nguyễn Thái Bình, P4, Tân Bình.<br>Anh chờ em nơi ánh nến dịu dàng. Em nhé?<br><br>Và nếu tối ấy, em quay lại nhìn, thấy một người ngốc nghếch cười như đứa trẻ – thì đó là anh đấy.<br><br><span style='font-size: 0.8em;'>– From the one who's been falling for you every one of those 10,000 days</span>",
+            text: "20:00 – 14.04.2025<br>Mr.Saigon, 45 Nguyễn Thái Bình, P4, Tân Bình.<br>Anh chờ em nơi ánh nến dịu dàng. Em nhé?<br><br>Và nếu tối ấy, em quay lại nhìn, thấy một người ngốc nghếch cười như đứa trẻ – thì đó là anh đấy.<br><br><span style='font-size: 0.8em;'>– From the one who's been falling for you every one of those 10,000 days</span>",
             background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465199/466970720_3756608501316985_2199087856845285861_n_yuvl5b.jpg"
           }
         ];
@@ -426,20 +468,20 @@
         // Collection of romantic music
         const musicTracks = [
           {
-            url: "https://cdn.pixabay.com/audio/2023/02/24/audio_03438a732a.mp3?filename=lofi-chill-medium-version-159456.mp3",
-            name: "Lofi Chill"
-          },
-          {
-            url: "https://cdn.pixabay.com/audio/2022/12/13/audio_ffd3a1545d.mp3?filename=peaceful-piano-113997.mp3",
-            name: "Peaceful Piano"
-          },
-          {
-            url: "https://cdn.pixabay.com/audio/2023/07/21/audio_b37f140eec.mp3?filename=romantic-piano-background-music-for-videos-173910.mp3",
+            url: "https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744469844/breezy-escape-chill-background-music-271240_hbyz42.mp3",
             name: "Romantic Piano"
           },
           {
-            url: "https://cdn.pixabay.com/audio/2022/05/31/audio_7eba43613b.mp3?filename=acoustic-guitar-background-music-for-videos-vlog-royalty-free-music-139994.mp3",
+            url: "https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744469840/falling-dewdrops-chill-background-music-271254_ibv4dx.mp3",
+            name: "Peaceful Piano"
+          },
+          {
+            url: "https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744469843/melodies-of-the-night-308497_duhort.mp3",
             name: "Acoustic Guitar"
+          },
+          {
+            url: "https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744469842/02-sweet-dream-good-night-ep-210421_qhddvz.mp3",
+            name: "Lofi Chill"
           }
         ];
     
@@ -500,7 +542,7 @@
           
           const pageNumber = document.createElement('div');
           pageNumber.className = 'page-number';
-          pageNumber.textContent = index === 0 ? '.' : `${index}`;
+          pageNumber.textContent = index === 0 ? 'Trang bìa' : `${index}`;
           cardFront.appendChild(pageNumber);
           
           // Add page corner effect
@@ -513,7 +555,7 @@
           // Add click handler for the card
           card.addEventListener('click', function(e) {
             // Ignore clicks on the nav buttons
-            if (e.target.closest('.nav')) return;
+            if (e.target.closest('.nav') || e.target.closest('.mobile-nav')) return;
             
             if (index === currentPage && !isFlipping) {
               nextPage();
@@ -522,8 +564,8 @@
           
           cardContainer.appendChild(card);
         }
-// Update which card is active
-function updateActiveCard() {
+    // Update which card is active
+    function updateActiveCard() {
       const cards = document.querySelectorAll('.card');
       
       cards.forEach((card, index) => {
@@ -540,9 +582,25 @@ function updateActiveCard() {
     function updateNavButtons() {
       const prevBtn = document.getElementById('prevBtn');
       const nextBtn = document.getElementById('nextBtn');
+      const mobilePrevBtn = document.getElementById('mobilePrevBtn');
+      const mobileNextBtn = document.getElementById('mobileNextBtn');
       
       prevBtn.disabled = currentPage === 0;
       nextBtn.disabled = currentPage >= pageContents.length - 1;
+      mobilePrevBtn.disabled = currentPage === 0;
+      mobileNextBtn.disabled = currentPage >= pageContents.length - 1;
+      
+      if (currentPage === 0) {
+        mobilePrevBtn.style.opacity = "0.5";
+      } else {
+        mobilePrevBtn.style.opacity = "1";
+      }
+      
+      if (currentPage >= pageContents.length - 1) {
+        mobileNextBtn.style.opacity = "0.5";
+      } else {
+        mobileNextBtn.style.opacity = "1";
+      }
     }
 
     // Navigate to the next page
@@ -589,7 +647,7 @@ function updateActiveCard() {
 
     // Play the page flip sound effect
     function playPageFlipSound() {
-      const flipSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_9f271ed494.mp3?filename=page-flip-8.mp3');
+      const flipSound = new Audio('https://res.cloudinary.com/dn4uv7l3x/video/upload/v1744470053/page-flip1-178322_ppcshc.mp3');
       flipSound.volume = 0.3;
       flipSound.play();
     }
@@ -601,10 +659,23 @@ function updateActiveCard() {
       const soundWave = document.querySelector('.sound-wave');
       
       if (audio.paused) {
-        audio.play();
-        playIcon.style.display = 'none';
-        pauseIcon.style.display = 'block';
-        soundWave.style.display = 'flex';
+        audio.volume = 0.5; // Set volume to 50%
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(_ => {
+            // Playback started successfully
+            playIcon.style.display = 'none';
+            pauseIcon.style.display = 'block';
+            soundWave.style.display = 'flex';
+          })
+          .catch(error => {
+            // Auto-play was prevented
+            console.log("Audio play failed:", error);
+            // Provide visual feedback that audio can't play automatically
+            alert("Nhấn lại nút phát nhạc để nghe nhạc nền");
+          });
+        }
       } else {
         audio.pause();
         playIcon.style.display = 'block';
@@ -621,11 +692,14 @@ function updateActiveCard() {
       
       // Continue playing if music was already playing
       if (document.getElementById('playIcon').style.display === 'none') {
-        audio.play();
+        audio.play()
+          .catch(error => {
+            console.log("Audio play failed after track change:", error);
+          });
       }
     }
-// Touch start handler
-function handleTouchStart(evt) {
+    // Touch start handler
+    function handleTouchStart(evt) {
       if (isFlipping) return;
       
       const touch = evt.touches[0];
@@ -696,6 +770,7 @@ function handleTouchStart(evt) {
       startX = null;
       startY = null;
     }
+
     // Check password function
     function checkPassword() {
       const correctPassword = "10000";
@@ -704,10 +779,20 @@ function handleTouchStart(evt) {
       if (input === correctPassword) {
         document.getElementById('passwordOverlay').style.display = 'none';
         initCards();
-        audio.play();
-        document.getElementById('playIcon').style.display = 'none';
-        document.getElementById('pauseIcon').style.display = 'block';
-        document.querySelector('.sound-wave').style.display = 'flex';
+        audio.volume = 0.5;
+        const playPromise = audio.play();
+        
+        if (playPromise !== undefined) {
+          playPromise.then(_ => {
+            document.getElementById('playIcon').style.display = 'none';
+            document.getElementById('pauseIcon').style.display = 'block';
+            document.querySelector('.sound-wave').style.display = 'flex';
+          })
+          .catch(error => {
+            console.log("Initial audio play failed:", error);
+            // Don't alert here since we just unlocked the page
+          });
+        }
       } else {
         document.getElementById('wrongPassword').style.display = 'block';
         // Shake animation for wrong password
