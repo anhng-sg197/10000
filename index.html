@@ -1,0 +1,749 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>10.000 Ngày Có Em</title>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Open+Sans&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    html, body {
+      height: 100%;
+      width: 100%;
+      font-family: 'Open Sans', sans-serif;
+      background: #fdf6f0;
+      overflow: hidden;
+      position: relative;
+    }
+    
+    .card-container {
+      width: 90%;
+      max-width: 800px;
+      height: 80%;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      perspective: 1500px;
+    }
+    
+    .card {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      transform-style: preserve-3d;
+      transition: all 0.8s ease;
+      border-radius: 15px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      display: none;
+    }
+    
+    .card.active {
+      display: block;
+      z-index: 10;
+    }
+    
+    .card-front, .card-back {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      backface-visibility: hidden;
+      border-radius: 15px;
+      background-size: cover;
+      background-position: center;
+      overflow: hidden;
+    }
+    
+    .card-front {
+      transform: rotateY(0deg);
+    }
+    
+    .card-back {
+      transform: rotateY(180deg);
+    }
+    
+    .card.flipped {
+      transform: rotateY(180deg);
+    }
+    
+    .page-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(255, 255, 255, 0.6);
+      backdrop-filter: blur(1px);
+    }
+    
+    .content-wrapper {
+      position: relative;
+      width: 80%;
+      padding: 30px;
+      margin: 0 auto;
+      top: 50%;
+      transform: translateY(-50%);
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 15px;
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+      text-align: center;
+      z-index: 2;
+    }
+    
+    .page-content {
+      font-size: 2em;
+      color: #333;
+      font-family: 'Great Vibes', cursive;
+      line-height: 1.5;
+    }
+    
+    .page-number {
+      position: absolute;
+      bottom: 20px;
+      right: 30px;
+      background-color: rgba(255, 255, 255, 0.8);
+      padding: 5px 15px;
+      border-radius: 20px;
+      font-size: 0.9em;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+    
+    .page-corner {
+      position: absolute;
+      width: 60px;
+      height: 60px;
+      top: 0;
+      right: 0;
+      background: linear-gradient(135deg, transparent 50%, rgba(255, 182, 193, 0.7) 50%);
+      z-index: 5;
+      border-top-right-radius: 15px;
+      transition: all 0.3s ease;
+    }
+    
+    .page-corner:hover {
+      width: 70px;
+      height: 70px;
+    }
+    
+    .nav {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      display: flex;
+      gap: 20px;
+    }
+    
+    .nav button {
+      font-size: 1.2em;
+      padding: 0.5em 1.2em;
+      background: #ffb6c1;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      color: white;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .nav button:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .nav button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    .swipe-indicator {
+      position: fixed;
+      bottom: 90px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 20;
+      font-size: 1em;
+      color: #333;
+      background: rgba(255, 255, 255, 0.9);
+      padding: 10px 20px;
+      border-radius: 30px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      display: flex;
+      align-items: center;
+      animation: fadeInOut 3s ease-in-out infinite;
+    }
+    
+    @keyframes fadeInOut {
+      0%, 100% { opacity: 0.7; }
+      50% { opacity: 1; }
+    }
+    
+    .audio-controls {
+      position: fixed;
+      bottom: 30px;
+      right: 30px;
+      z-index: 20;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+    
+    .music-btn {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      background: #ffb6c1;
+      border: none;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      transition: all 0.3s ease;
+    }
+    
+    .music-btn:hover {
+      transform: scale(1.1);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .sound-wave {
+      display: flex;
+      align-items: center;
+      height: 20px;
+      gap: 2px;
+      margin-top: 5px;
+    }
+    
+    .sound-wave span {
+      width: 3px;
+      height: 100%;
+      background-color: #ffb6c1;
+      border-radius: 3px;
+      animation: waveAnimation 1.2s infinite ease-in-out;
+    }
+    
+    .sound-wave span:nth-child(2) { animation-delay: 0.2s; }
+    .sound-wave span:nth-child(3) { animation-delay: 0.4s; }
+    .sound-wave span:nth-child(4) { animation-delay: 0.6s; }
+    .sound-wave span:nth-child(5) { animation-delay: 0.8s; }
+    
+    @keyframes waveAnimation {
+      0%, 100% { height: 5px; }
+      50% { height: 15px; }
+    }
+    
+    /* Password overlay */
+    #passwordOverlay {
+      position: fixed;
+      inset: 0;
+      background: #fff8f0;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      z-index: 9999;
+    }
+    
+    #passwordOverlay h2 {
+      font-family: 'Great Vibes', cursive;
+      font-size: 2em;
+      color: #333;
+      margin-bottom: 30px;
+      text-align: center;
+      max-width: 80%;
+    }
+    
+    #passwordInput {
+      padding: 15px 20px;
+      font-size: 1.2em;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+      margin-bottom: 20px;
+      width: 80%;
+      max-width: 300px;
+      text-align: center;
+      outline: none;
+    }
+    
+    #passwordOverlay button {
+      padding: 12px 25px;
+      font-size: 1.2em;
+      border: none;
+      background: #ffb6c1;
+      color: white;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    }
+    
+    #passwordOverlay button:hover {
+      background: #ff9aab;
+      transform: translateY(-3px);
+      box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    #wrongPassword {
+      color: red;
+      margin-top: 20px;
+      display: none;
+      font-size: 1.1em;
+    }
+    
+    /* Responsive styles */
+    @media (max-width: 768px) {
+      .card-container {
+        width: 95%;
+      }
+      
+      .page-content {
+        font-size: 1.5em;
+      }
+      
+      .content-wrapper {
+        width: 90%;
+        padding: 20px;
+      }
+      
+      .nav button {
+        font-size: 1em;
+        padding: 0.4em 1em;
+      }
+    }
+    
+    @media (max-width: 480px) {
+      .page-content {
+        font-size: 1.2em;
+      }
+      
+      .content-wrapper {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .nav button {
+        font-size: 0.9em;
+        padding: 0.3em 0.8em;
+      }
+      
+      .page-corner {
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    /* Shake animation for wrong password */
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+      20%, 40%, 60%, 80% { transform: translateX(5px); }
+    }
+  </style>
+</head>
+<body>
+    <div id="passwordOverlay">
+      <h2>Một điều bất ngờ đang chờ em...<br>Chỉ cần một từ bí mật để bắt đầu</h2>
+      <input type="password" id="passwordInput" placeholder="Mật khẩu" autocomplete="off">
+      <button onclick="checkPassword()">Mở thiệp</button>
+      <p id="wrongPassword">Sai mật khẩu rồi nè 🥲</p>
+    </div>
+  
+    <audio id="backgroundMusic" loop>
+      <source id="musicSource" src="https://cdn.pixabay.com/audio/2023/02/24/audio_03438a732a.mp3?filename=lofi-chill-medium-version-159456.mp3" type="audio/mpeg">
+    </audio>
+    
+    <div class="card-container" id="cardContainer">
+      <!-- Cards will be added dynamically -->
+    </div>
+  
+    <div class="nav">
+      <button id="prevBtn" onclick="prevPage()">⬅ Trang trước</button>
+      <button id="nextBtn" onclick="nextPage()">Trang sau ➡</button>
+    </div>
+  
+    <div class="swipe-indicator">
+      <span>Vuốt hoặc nhấn để lật trang →</span>
+    </div>
+  
+    <div class="audio-controls">
+      <button class="music-btn" id="toggleMusic" onclick="toggleMusic()">
+        <svg id="playIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: block;">
+          <path d="M8 5V19L19 12L8 5Z" fill="white"/>
+        </svg>
+        <svg id="pauseIcon" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="display: none;">
+          <path d="M6 19H10V5H6V19ZM14 5V19H18V5H14Z" fill="white"/>
+        </svg>
+      </button>
+      <div class="sound-wave" style="display: none;">
+        <span></span><span></span><span></span><span></span><span></span>
+      </div>
+      <button class="music-btn" id="changeMusic" onclick="changeMusic()">
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M12 3V13.55C11.41 13.21 10.73 13 10 13C7.79 13 6 14.79 6 17C6 19.21 7.79 21 10 21C12.21 21 14 19.21 14 17V7H18V3H12ZM10 19C8.9 19 8 18.1 8 17C8 15.9 8.9 15 10 15C11.1 15 12 15.9 12 17C12 18.1 11.1 19 10 19Z" fill="white"/>
+        </svg>
+      </button>
+    </div>
+    <script>
+        // Page content data
+        const pageContents = [
+          {
+            text: "Chào em,<br><br>Thiệp này không cần mở bằng tay, chỉ cần một lần vuốt, và một chút rung động...<br><br>Hãy bắt đầu hành trình 10.000 ngày tuyệt đẹp này cùng anh – lật trang nhé?",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744464878/486185379_3874110859566748_2113793991814531200_n_wsbct8.jpg"
+          },
+          {
+            text: " Gửi em,<br>Một hành trình 10.000 ngày vừa khép lại, và anh muốn kể em nghe từ đầu...<br><br>Những ngày ấy không chỉ là con số. Đó là từng ánh nhìn em trao, từng mùa em lớn lên, từng khoảnh khắc em lặng lẽ đẹp đến ngẩn ngơ. Và anh tin – sự có mặt của em là điều kỳ diệu nhất mà cuộc đời đã âm thầm chuẩn bị.",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/476853262_3839787499665751_3491104318425042400_n_bgcczq.jpg"
+          },
+          {
+            text: " Từ khoảnh khắc em hình thành,<br>thế giới này bắt đầu có thêm một màu dịu dàng mà anh mãi say mê.<br><br>Em không chỉ đến với đời, em đến như một tia sáng – mang theo bao ấm áp, trong trẻo và cả một thế giới đầy sắc màu. Có em, mọi điều tưởng chừng bình thường cũng trở nên đặc biệt hơn.",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/480942611_3839787542999080_6783851008321058400_n_fjqjoo.jpg"
+          },
+          {
+            text: " Anh không biết mình may mắn thế nào,<br>khi được hiện diện trong chương truyện 10.000 ngày của em.<br><br>Thời gian trôi, có lẽ anh đã lỡ nhiều khoảnh khắc. Nhưng chỉ cần một ánh mắt, một nụ cười của em, mọi thứ như được chữa lành. Em đã lặng lẽ đi cùng năm tháng, và anh chỉ muốn được lặng lẽ bên em như thế, lâu thật lâu.",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/470218078_3781632032147965_5440740182080465760_n_chsujx.jpg"
+          },
+          {
+            text: " Và rồi hôm nay,<br>anh mời em đến nơi này, chỉ để nói: cảm ơn em đã đến, và ở lại.<br><br>Không cần pháo hoa, không cần điều bất ngờ. Chỉ cần em, chỉ cần ánh mắt ấy trong buổi tối này – là đủ để biến 10.000 ngày qua thành điều ngọt ngào nhất đời anh.",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465200/474519851_3809247989386369_1354147707772670712_n_x3irw0.jpg"
+          },
+          {
+            text: " 20:00 – 14.04.2025<br>Mr.Saigon, 45 Nguyễn Thái Bình, P4, Tân Bình.<br>Anh chờ em nơi ánh nến dịu dàng. Em nhé?<br><br>Và nếu tối ấy, em quay lại nhìn, thấy một người ngốc nghếch cười như đứa trẻ – thì đó là anh đấy.<br><br><span style='font-size: 0.8em;'>– From the one who's been falling for you every one of those 10,000 days</span>",
+            background: "https://res.cloudinary.com/dn4uv7l3x/image/upload/v1744465199/466970720_3756608501316985_2199087856845285861_n_yuvl5b.jpg"
+          }
+        ];
+    
+        // Collection of romantic music
+        const musicTracks = [
+          {
+            url: "https://cdn.pixabay.com/audio/2023/02/24/audio_03438a732a.mp3?filename=lofi-chill-medium-version-159456.mp3",
+            name: "Lofi Chill"
+          },
+          {
+            url: "https://cdn.pixabay.com/audio/2022/12/13/audio_ffd3a1545d.mp3?filename=peaceful-piano-113997.mp3",
+            name: "Peaceful Piano"
+          },
+          {
+            url: "https://cdn.pixabay.com/audio/2023/07/21/audio_b37f140eec.mp3?filename=romantic-piano-background-music-for-videos-173910.mp3",
+            name: "Romantic Piano"
+          },
+          {
+            url: "https://cdn.pixabay.com/audio/2022/05/31/audio_7eba43613b.mp3?filename=acoustic-guitar-background-music-for-videos-vlog-royalty-free-music-139994.mp3",
+            name: "Acoustic Guitar"
+          }
+        ];
+    
+        let currentPage = 0;
+        let currentMusicIndex = 0;
+        let isFlipping = false;
+        let startX = null;
+        let startY = null;
+        const cardContainer = document.getElementById('cardContainer');
+        const audio = document.getElementById('backgroundMusic');
+    
+        // Initialize cards
+        function initCards() {
+          // Clear container
+          cardContainer.innerHTML = '';
+          
+          // Create cards for each page content
+          pageContents.forEach((content, index) => {
+            createCard(index, content);
+          });
+          
+          // Set initial active card
+          updateActiveCard();
+          
+          // Update nav buttons state
+          updateNavButtons();
+          
+          // Hide swipe indicator after 5 seconds
+          setTimeout(() => {
+            document.querySelector('.swipe-indicator').style.display = 'none';
+          }, 5000);
+        }
+    
+        // Create a single card
+        function createCard(index, content) {
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.id = `card-${index}`;
+          card.dataset.index = index;
+          
+          const cardFront = document.createElement('div');
+          cardFront.className = 'card-front';
+          cardFront.style.backgroundImage = `url('${content.background}')`;
+          
+          const overlay = document.createElement('div');
+          overlay.className = 'page-overlay';
+          cardFront.appendChild(overlay);
+          
+          const contentWrapper = document.createElement('div');
+          contentWrapper.className = 'content-wrapper';
+          
+          const pageContent = document.createElement('div');
+          pageContent.className = 'page-content';
+          pageContent.innerHTML = content.text;
+          
+          contentWrapper.appendChild(pageContent);
+          cardFront.appendChild(contentWrapper);
+          
+          const pageNumber = document.createElement('div');
+          pageNumber.className = 'page-number';
+          pageNumber.textContent = index === 0 ? '.' : `${index}`;
+          cardFront.appendChild(pageNumber);
+          
+          // Add page corner effect
+          const pageCorner = document.createElement('div');
+          pageCorner.className = 'page-corner';
+          cardFront.appendChild(pageCorner);
+          
+          card.appendChild(cardFront);
+          
+          // Add click handler for the card
+          card.addEventListener('click', function(e) {
+            // Ignore clicks on the nav buttons
+            if (e.target.closest('.nav')) return;
+            
+            if (index === currentPage && !isFlipping) {
+              nextPage();
+            }
+          });
+          
+          cardContainer.appendChild(card);
+        }
+// Update which card is active
+function updateActiveCard() {
+      const cards = document.querySelectorAll('.card');
+      
+      cards.forEach((card, index) => {
+        if (index === currentPage) {
+          card.classList.add('active');
+          card.classList.remove('flipped');
+        } else {
+          card.classList.remove('active');
+        }
+      });
+    }
+
+    // Update the state of navigation buttons
+    function updateNavButtons() {
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      
+      prevBtn.disabled = currentPage === 0;
+      nextBtn.disabled = currentPage >= pageContents.length - 1;
+    }
+
+    // Navigate to the next page
+    function nextPage() {
+      if (isFlipping || currentPage >= pageContents.length - 1) return;
+      
+      isFlipping = true;
+      
+      // Play flip sound
+      playPageFlipSound();
+      
+      // Get current card and add flip animation
+      const currentCard = document.getElementById(`card-${currentPage}`);
+      currentCard.classList.add('flipped');
+      
+      // Wait for flip animation to complete
+      setTimeout(() => {
+        currentPage++;
+        updateActiveCard();
+        updateNavButtons();
+        isFlipping = false;
+      }, 800);
+    }
+
+    // Navigate to the previous page
+    function prevPage() {
+      if (isFlipping || currentPage <= 0) return;
+      
+      isFlipping = true;
+      currentPage--;
+      
+      // Play flip sound
+      playPageFlipSound();
+      
+      // Update active card immediately
+      updateActiveCard();
+      updateNavButtons();
+      
+      // Allow time for the DOM to update
+      setTimeout(() => {
+        isFlipping = false;
+      }, 800);
+    }
+
+    // Play the page flip sound effect
+    function playPageFlipSound() {
+      const flipSound = new Audio('https://cdn.pixabay.com/download/audio/2022/03/10/audio_9f271ed494.mp3?filename=page-flip-8.mp3');
+      flipSound.volume = 0.3;
+      flipSound.play();
+    }
+
+    // Toggle background music playback
+    function toggleMusic() {
+      const playIcon = document.getElementById('playIcon');
+      const pauseIcon = document.getElementById('pauseIcon');
+      const soundWave = document.querySelector('.sound-wave');
+      
+      if (audio.paused) {
+        audio.play();
+        playIcon.style.display = 'none';
+        pauseIcon.style.display = 'block';
+        soundWave.style.display = 'flex';
+      } else {
+        audio.pause();
+        playIcon.style.display = 'block';
+        pauseIcon.style.display = 'none';
+        soundWave.style.display = 'none';
+      }
+    }
+
+    // Change to the next track
+    function changeMusic() {
+      currentMusicIndex = (currentMusicIndex + 1) % musicTracks.length;
+      document.getElementById('musicSource').src = musicTracks[currentMusicIndex].url;
+      audio.load();
+      
+      // Continue playing if music was already playing
+      if (document.getElementById('playIcon').style.display === 'none') {
+        audio.play();
+      }
+    }
+// Touch start handler
+function handleTouchStart(evt) {
+      if (isFlipping) return;
+      
+      const touch = evt.touches[0];
+      startX = touch.clientX;
+      startY = touch.clientY;
+    }
+
+    // Touch move handler
+    function handleTouchMove(evt) {
+      if (!startX || isFlipping) return;
+      
+      const touch = evt.touches[0];
+      const diffX = startX - touch.clientX;
+      const diffY = startY - touch.clientY;
+      
+      // Ensure horizontal swipe is dominant
+      if (Math.abs(diffX) > Math.abs(diffY)) {
+        evt.preventDefault();
+      }
+    }
+
+    // Touch end handler
+    function handleTouchEnd(evt) {
+      if (!startX || isFlipping) return;
+      
+      const touch = evt.changedTouches[0];
+      const diffX = startX - touch.clientX;
+      
+      if (Math.abs(diffX) > 70) {
+        if (diffX > 0 && currentPage < pageContents.length - 1) {
+          nextPage(); // Swipe left to go forward
+        } else if (diffX < 0 && currentPage > 0) {
+          prevPage(); // Swipe right to go back
+        }
+      }
+      
+      startX = null;
+      startY = null;
+    }
+
+    // Mouse down handler
+    function handleMouseDown(evt) {
+      if (isFlipping) return;
+      
+      startX = evt.clientX;
+      startY = evt.clientY;
+    }
+
+    // Mouse move handler
+    function handleMouseMove(evt) {
+      if (!startX || isFlipping) return;
+    }
+
+    // Mouse up handler
+    function handleMouseUp(evt) {
+      if (!startX || isFlipping) return;
+      
+      const diffX = startX - evt.clientX;
+      
+      if (Math.abs(diffX) > 70) {
+        if (diffX > 0 && currentPage < pageContents.length - 1) {
+          nextPage();
+        } else if (diffX < 0 && currentPage > 0) {
+          prevPage();
+        }
+      }
+      
+      startX = null;
+      startY = null;
+    }
+    // Check password function
+    function checkPassword() {
+      const correctPassword = "10000";
+      const input = document.getElementById('passwordInput').value;
+      
+      if (input === correctPassword) {
+        document.getElementById('passwordOverlay').style.display = 'none';
+        initCards();
+        audio.play();
+        document.getElementById('playIcon').style.display = 'none';
+        document.getElementById('pauseIcon').style.display = 'block';
+        document.querySelector('.sound-wave').style.display = 'flex';
+      } else {
+        document.getElementById('wrongPassword').style.display = 'block';
+        // Shake animation for wrong password
+        const passwordInput = document.getElementById('passwordInput');
+        passwordInput.style.animation = 'shake 0.5s';
+        setTimeout(() => {
+          passwordInput.style.animation = '';
+        }, 500);
+      }
+    }
+
+    // Add keyboard navigation
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        nextPage();
+      } else if (e.key === 'ArrowLeft') {
+        prevPage();
+      }
+    });
+
+    // Add touch event listeners
+    document.addEventListener('touchstart', handleTouchStart, {passive: false});
+    document.addEventListener('touchmove', handleTouchMove, {passive: false});
+    document.addEventListener('touchend', handleTouchEnd);
+
+    // Add mouse event listeners
+    document.addEventListener('mousedown', handleMouseDown);
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+    
+    // Enter key for password input
+    document.getElementById('passwordInput').addEventListener('keyup', function(e) {
+      if (e.key === 'Enter') {
+        checkPassword();
+      }
+    });
+  </script>
+</body>
+</html>
